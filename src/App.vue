@@ -89,6 +89,7 @@ export default {
     },
     onPlayVideo: function (app) {
       // create a video texture from a path
+      // new smaller video file
       this.video = PIXI.Texture.fromVideo('./src/assets/test.mp4');
 
       // Don't need the button anymore
