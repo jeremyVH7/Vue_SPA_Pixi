@@ -6,8 +6,6 @@
       <button class="btn btn-primary NavButton" v-on:click="pixiStart" tag="button">Start</button>
       <button class="btn btn-primary NavButton" v-on:click="speedUp" tag="button">Speed Up!</button>
       <button class="btn btn-primary NavButton" v-on:click="slowDown" tag="button">Slow Down!</button>
-      <button class="btn btn-primary NavButton" v-on:click="pauseVideo" tag="button">Pause Video</button>
-      <button class="btn btn-primary NavButton" v-on:click="playVideo" tag="button">Play Video</button>
     </div>
   </div>
 </template>
@@ -23,6 +21,7 @@ import About from './components/About.vue'
 import Error404 from './components/Error404.vue'
 import * as PIXI from 'pixi.js'
 
+// For spinning logo
 var pixiApp = new PIXI.Application(800, 400, {backgroundColor : 0x9999bb});
 
 export default {
@@ -40,7 +39,10 @@ export default {
       speed: 0.1,
       image: '',
       video: '',
-      videoBtn: '',
+      startBtn: '',
+      playBtn: '',
+      pauseBtn: '',
+      videoPlaying: false,
       buttonLinks: [
         ['/home', 'Home'],
         ['/about', 'About']
@@ -51,7 +53,7 @@ export default {
   },
   methods: {
     videoTest: function () {
-      var app = new PIXI.Application(800, 400, { transparent: true });
+      var app = new PIXI.Application(960, 540, { transparent: true });
       document.body.appendChild(app.view);
 
       // Create play button that can be used to trigger the video
@@ -72,9 +74,9 @@ export default {
       button.interactive = true;
       button.buttonMode = true;
 
-      this.videoBtn = button;
+      this.startBtn = button;
       // Add to the stage
-      app.stage.addChild(this.videoBtn);
+      app.stage.addChild(this.startBtn);
 
       // Listen for a click/tap event to start playing the video
       // this is useful for some mobile platforms. For example:
@@ -83,17 +85,33 @@ export default {
       // ios10 and above require a click/tap event to render videos
       // that contain audio in PIXI. Videos with no audio track do
       // not have this requirement
-      this.videoBtn.on('pointertap', (event) => {
+      this.startBtn.on('pointertap', (event) => {
         this.onPlayVideo(app);
       });
     },
     onPlayVideo: function (app) {
+      this.videoPlaying = true;
+      // Pause button - transparent button same size as video app
+      var pauseButton = new PIXI.Graphics()
+          .beginFill(0x0, 0.0)
+          .drawRoundedRect(0, 0, 960, 540, 10)
+          .endFill();
+
+      // Position the pauseButton (centered)
+      pauseButton.x = (app.screen.width - pauseButton.width) / 2;
+      pauseButton.y = (app.screen.height - pauseButton.height) / 2;
+
+      // Enable interactivity on the pauseButton
+      pauseButton.interactive = true;
+      pauseButton.buttonMode = true;
+      this.pauseBtn = pauseButton;
+
       // create a video texture from a path
-      // new smaller video file
       this.video = PIXI.Texture.fromVideo('./src/assets/test.mp4');
 
-      // Don't need the button anymore
-      this.videoBtn.destroy();
+      // Don't need the start button anymore
+      this.startBtn.destroy();
+
       // create a new Sprite using the video texture (yes it's that easy)
       var videoSprite = new PIXI.Sprite(this.video);
 
@@ -102,6 +120,39 @@ export default {
       videoSprite.height = app.screen.height;
 
       app.stage.addChild(videoSprite);
+      app.stage.addChild(this.pauseBtn);
+      this.video.baseTexture.source.controls = true;
+      console.log(this.video);
+      // console.log(this.video.currentTime);
+      // Progress bar
+      // var bar = new PIXI.Graphics()
+      //     .beginFill(0x0, 0.5)
+      //     .drawRoundedRect(0, 0, 100, 100, 10)
+      //     .endFill()
+      //     .beginFill(0xffffff)
+      //     .moveTo(36, 30)
+      //     .lineTo(36, 70)
+      //     .lineTo(70, 50);
+      // app.stage.addChild(bar);
+      // bar.addEventListener("timeupdate", function() {
+      //   var value = (100 / this.video.duration) * this.video.currentTime;
+      //   console.log(value);
+      //   // bar.value = value;
+      // });
+
+      this.pauseBtn.on('pointertap', (event) => {
+        console.log('duration', this.video.baseTexture.source.duration);
+        console.log('currentTime', this.video.baseTexture.source.currentTime);
+        if (this.videoPlaying === true) {
+          this.pauseVideo();
+          this.videoPlaying = false;
+          // app.stage.removeChild(this.pauseBtn);
+        } else {
+          this.playVideo();
+          this.videoPlaying = true;
+        }
+
+      });
     },
     pauseVideo: function () {
       this.video.baseTexture.source.pause();
@@ -155,8 +206,8 @@ export default {
     }
   },
   mounted: function () {
-    this.pixiVue()
     this.videoTest()
+    this.pixiVue()
   },
   created: function () {
     // EventBus.$on('button-clicked', this.buttonClicked);
