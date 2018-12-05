@@ -176,7 +176,7 @@ export default {
       pixiApp.stage.addChild(logo);
 
       this.image = logo
-      this.pixiTicker(1)
+      // this.pixiTicker(1)
     },
     pixiTicker: function (dir) {
       var speed = this.speed
