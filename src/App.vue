@@ -5,13 +5,13 @@
       <h3>Spinning Logo Controls</h3>
       <button class="btn btn-primary NavButton" v-on:click="pixiStop" tag="button">Stop</button>
       <button class="btn btn-primary NavButton" v-on:click="pixiStart" tag="button">Start</button>
-      <button class="btn btn-primary NavButton" v-on:click="speedUp" tag="button">Speed Up!</button>
-      <button class="btn btn-primary NavButton" v-on:click="slowDown" tag="button">Slow Down!</button>
+      <button class="btn btn-primary NavButton" v-on:click="speedUp" tag="button">Speed Up</button>
+      <button class="btn btn-primary NavButton" v-on:click="slowDown" tag="button">Slow Down</button>
       <hr>
       <h3>Video Controls</h3>
-      <button class="btn btn-primary NavButton" v-on:click="volumeUp" tag="button">Volume Up!</button>
-      <button class="btn btn-primary NavButton" v-on:click="volumeDown" tag="button">Volume Down!</button>
-      <button class="btn btn-primary NavButton" v-on:click="muteVideo" tag="button">Mute!</button>
+      <button class="btn btn-primary NavButton" v-on:click="volumeUp" tag="button">Volume Up</button>
+      <button class="btn btn-primary NavButton" v-on:click="volumeDown" tag="button">Volume Down</button>
+      <button class="btn btn-primary NavButton" v-on:click="muteVideo" tag="button">Mute</button>
     </div>
   </div>
 </template>
