@@ -2,10 +2,16 @@
   <div>
     <div id="app">
       <div class='row' id='title-h1-div'><h1 id='title-h1'>{{ title }}</h1></div>
+      <h3>Spinning Logo Controls</h3>
       <button class="btn btn-primary NavButton" v-on:click="pixiStop" tag="button">Stop</button>
       <button class="btn btn-primary NavButton" v-on:click="pixiStart" tag="button">Start</button>
-      <button class="btn btn-primary NavButton" v-on:click="speedUp" tag="button">Speed Up!</button>
-      <button class="btn btn-primary NavButton" v-on:click="slowDown" tag="button">Slow Down!</button>
+      <button class="btn btn-primary NavButton" v-on:click="speedUp" tag="button">Speed Up</button>
+      <button class="btn btn-primary NavButton" v-on:click="slowDown" tag="button">Slow Down</button>
+      <hr>
+      <h3>Video Controls</h3>
+      <button class="btn btn-primary NavButton" v-on:click="volumeUp" tag="button">Volume Up</button>
+      <button class="btn btn-primary NavButton" v-on:click="volumeDown" tag="button">Volume Down</button>
+      <button class="btn btn-primary NavButton" v-on:click="muteVideo" tag="button">Mute</button>
     </div>
   </div>
 </template>
@@ -42,6 +48,9 @@ export default {
       startBtn: '',
       playBtn: '',
       pauseBtn: '',
+      percentDone: '',
+      audioLevel: .5,
+      muted: false,
       videoPlaying: false,
       buttonLinks: [
         ['/home', 'Home'],
@@ -108,11 +117,12 @@ export default {
 
       // create a video texture from a path
       this.video = PIXI.Texture.fromVideo('./src/assets/test.mp4');
-
+      // Set starting volume level
+      this.video.baseTexture.source.volume = this.audioLevel;
       // Don't need the start button anymore
       this.startBtn.destroy();
 
-      // create a new Sprite using the video texture (yes it's that easy)
+      // create a new Sprite using the video texture
       var videoSprite = new PIXI.Sprite(this.video);
 
       // Stetch the fullscreen
@@ -122,31 +132,28 @@ export default {
       app.stage.addChild(videoSprite);
       app.stage.addChild(this.pauseBtn);
       this.video.baseTexture.source.controls = true;
-      console.log(this.video);
-      // console.log(this.video.currentTime);
+
       // Progress bar
-      // var bar = new PIXI.Graphics()
-      //     .beginFill(0x0, 0.5)
-      //     .drawRoundedRect(0, 0, 100, 100, 10)
-      //     .endFill()
-      //     .beginFill(0xffffff)
-      //     .moveTo(36, 30)
-      //     .lineTo(36, 70)
-      //     .lineTo(70, 50);
-      // app.stage.addChild(bar);
-      // bar.addEventListener("timeupdate", function() {
-      //   var value = (100 / this.video.duration) * this.video.currentTime;
-      //   console.log(value);
-      //   // bar.value = value;
-      // });
+      var bar = new PIXI.Graphics()
+          .beginFill(0xffffff, 0.5)
+          .drawRoundedRect(0, 0, app.screen.width, 10, 10)
+          .endFill();
+      app.stage.addChild(bar);
+
+      bar.y = app.screen.height - 30;
+      console.log(this.video);
+      // Update progress
+      this.video.on("update", function(e) {
+        this.percentDone = (100 / e.baseTexture.source.duration) * e.baseTexture.source.currentTime;
+        //percent to pixels
+        var progress = app.screen.width * (this.percentDone / 100)
+        bar.width = progress;
+      });
 
       this.pauseBtn.on('pointertap', (event) => {
-        console.log('duration', this.video.baseTexture.source.duration);
-        console.log('currentTime', this.video.baseTexture.source.currentTime);
         if (this.videoPlaying === true) {
           this.pauseVideo();
           this.videoPlaying = false;
-          // app.stage.removeChild(this.pauseBtn);
         } else {
           this.playVideo();
           this.videoPlaying = true;
@@ -154,11 +161,33 @@ export default {
 
       });
     },
+    volumeUp: function () {
+      this.audioLevel = this.audioLevel + .1;
+      if (this.audioLevel > 1) this.audioLevel = 1;
+      this.video.baseTexture.source.volume = this.audioLevel;
+    },
+    volumeDown: function () {
+      this.audioLevel = this.audioLevel - .1;
+      if (this.audioLevel < 0) this.audioLevel = 0;
+      this.video.baseTexture.source.volume = this.audioLevel;
+    },
+    muteVideo: function () {
+      if (this.muted === false) {
+        this.muted = true;
+        this.video.baseTexture.source.volume = 0;
+      } else {
+        this.muted = false;
+        this.video.baseTexture.source.volume = this.audioLevel;
+      }
+    },
     pauseVideo: function () {
       this.video.baseTexture.source.pause();
     },
     playVideo: function () {
       this.video.baseTexture.source.play();
+    },
+    fullScreen: function () {
+      app.fullscreen;
     },
     pixiVue: function () {
 
