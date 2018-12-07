@@ -39,6 +39,7 @@ export default {
       startBtn: '',
       playBtn: '',
       pauseBtn: '',
+      controlBtn: '',
       percentDone: '',
       audioLevel: .5,
       muted: false,
@@ -121,14 +122,16 @@ export default {
       app.stage.addChild(this.pauseBtn);
       this.video.baseTexture.source.controls = true;
 
+
+      ///////////////// Controls
       // Progress bar
       var bar = new PIXI.Graphics()
           .beginFill(0xffffff, 0.5)
-          .drawRoundedRect(0, 0, app.screen.width, 10, 10)
+          .drawRoundedRect(0, 0, app.screen.width, 5, 5)
           .endFill();
       app.stage.addChild(bar);
 
-      bar.y = app.screen.height - 30;
+      bar.y = app.screen.height - 50;
 
       // Update progress
       this.video.on("update", function(e) {
@@ -137,6 +140,59 @@ export default {
         var progress = app.screen.width * (this.percentDone / 100)
         bar.width = progress;
       });
+
+      // Play/Pause button -
+      var controlButton = new PIXI.Graphics()
+          .beginFill(0x0, 0.5)
+          .drawRect(0, 0, 40, 40, 10)
+          .endFill()
+          .beginFill(0xffffff)
+          .moveTo(14, 12)
+          .lineTo(14, 28)
+          .lineTo(28, 20);
+      this.controlBtn = controlButton;
+      app.stage.addChild(this.controlBtn);
+
+      // Position the controlButton
+      controlButton.x = 0;
+      controlButton.y = app.screen.height - 40;
+
+      // Enable interactivity on the controlButton
+      controlButton.interactive = true;
+      controlButton.buttonMode = true;
+
+      this.controlBtn.on('pointertap', (event) => {
+        if (this.videoPlaying === true) {
+          this.pauseVideo();
+          this.videoPlaying = false;
+        } else {
+          this.playVideo();
+          this.videoPlaying = true;
+        }
+      });
+
+      // full screen button -
+      var fsButton = new PIXI.Graphics()
+          .beginFill(0x0, 0.5)
+          .drawRect(0, 0, 40, 40, 10)
+          .endFill();
+      this.fsBtn = fsButton;
+      app.stage.addChild(this.fsBtn);
+
+      // Position the controlButton
+      fsButton.x = app.screen.width - 40;
+      fsButton.y = app.screen.height - 40;
+
+      // Enable interactivity on the controlButton
+      fsButton.interactive = true;
+      fsButton.buttonMode = true;
+
+      this.fsBtn.on('pointertap', (event) => {
+        this.fullScreen();
+      });
+
+
+
 
       this.pauseBtn.on('pointertap', (event) => {
         if (this.videoPlaying === true) {
@@ -169,11 +225,14 @@ export default {
       }
     },
     fullScreen: function () {
-      // Target the canvas and resize
-      var theCanvas = document.querySelectorAll('canvas');
+      /////// Is there a way to do it within pixi?
+
       // this.videoApp.renderer.resize(screen.width, screen.height);
       // this.videoSprite.width = this.videoApp.screen.width;
       // this.videoSprite.height = this.videoApp.screen.height;
+
+      // Target the canvas and resize
+      var theCanvas = document.querySelectorAll('canvas');
 
       if (theCanvas[0].requestFullscreen) {
         theCanvas[0].requestFullscreen();
