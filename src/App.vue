@@ -8,11 +8,11 @@
       <button class="btn btn-primary NavButton" v-on:click="speedUp" tag="button">Speed Up</button>
       <button class="btn btn-primary NavButton" v-on:click="slowDown" tag="button">Slow Down</button>
       <hr> -->
-      <h3>Video Controls</h3>
+      <!-- <h3>Video Controls</h3>
       <button class="btn btn-primary NavButton" v-on:click="volumeUp" tag="button">Volume Up</button>
       <button class="btn btn-primary NavButton" v-on:click="volumeDown" tag="button">Volume Down</button>
       <button class="btn btn-primary NavButton" v-on:click="muteVideo" tag="button">Mute</button>
-      <button class="btn btn-primary NavButton" v-on:click="fullScreen" tag="button">Fullscreen</button>
+      <button class="btn btn-primary NavButton" v-on:click="fullScreen" tag="button">Fullscreen</button> -->
     </div>
   </div>
 </template>
@@ -30,7 +30,7 @@ export default {
   },
   data () {
     return {
-      title: 'Pixi Test',
+      title: 'Pixi.js Test',
       speed: 0.1,
       image: '',
       videoApp: '',
@@ -166,6 +166,11 @@ export default {
           app.stage.addChild(replay);
 
           this.replayBtnShown = true;
+
+          replay.on('pointertap', (event) => {
+            console.log('replay');
+
+          });
         }
 
       });
