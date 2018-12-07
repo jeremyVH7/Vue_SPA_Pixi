@@ -2,29 +2,23 @@
   <div>
     <div id="app">
       <div class='row' id='title-h1-div'><h1 id='title-h1'>{{ title }}</h1></div>
-      <h3>Spinning Logo Controls</h3>
+      <!-- <h3>Spinning Logo Controls</h3>
       <button class="btn btn-primary NavButton" v-on:click="pixiStop" tag="button">Stop</button>
       <button class="btn btn-primary NavButton" v-on:click="pixiStart" tag="button">Start</button>
       <button class="btn btn-primary NavButton" v-on:click="speedUp" tag="button">Speed Up</button>
       <button class="btn btn-primary NavButton" v-on:click="slowDown" tag="button">Slow Down</button>
-      <hr>
+      <hr> -->
       <h3>Video Controls</h3>
       <button class="btn btn-primary NavButton" v-on:click="volumeUp" tag="button">Volume Up</button>
       <button class="btn btn-primary NavButton" v-on:click="volumeDown" tag="button">Volume Down</button>
       <button class="btn btn-primary NavButton" v-on:click="muteVideo" tag="button">Mute</button>
+      <button class="btn btn-primary NavButton" v-on:click="fullScreen" tag="button">Fullscreen</button>
     </div>
   </div>
 </template>
 
 <script>
 import {EventBus} from './components/EventBus.js'
-import NavBar from './components/NavBar.vue'
-import NavButton from './components/NavButton.vue'
-import NavDropdown from './components/NavDropdown.vue'
-import NavSearch from './components/NavSearch.vue'
-import Home from './components/Home.vue'
-import About from './components/About.vue'
-import Error404 from './components/Error404.vue'
 import * as PIXI from 'pixi.js'
 
 // For spinning logo
@@ -33,17 +27,14 @@ var pixiApp = new PIXI.Application(800, 400, {backgroundColor : 0x9999bb});
 export default {
   name: 'app',
   components: {
-    NavBar: NavBar,
-    NavButton: NavButton,
-    Home: Home,
-    About: About,
-    Error404: Error404
   },
   data () {
     return {
       title: 'Pixi Test',
       speed: 0.1,
       image: '',
+      videoApp: '',
+      videoSprite: '',
       video: '',
       startBtn: '',
       playBtn: '',
@@ -51,13 +42,7 @@ export default {
       percentDone: '',
       audioLevel: .5,
       muted: false,
-      videoPlaying: false,
-      buttonLinks: [
-        ['/home', 'Home'],
-        ['/about', 'About']
-
-        // ['/error404', 'Error']
-      ]
+      videoPlaying: false
     }
   },
   methods: {
@@ -97,6 +82,7 @@ export default {
       this.startBtn.on('pointertap', (event) => {
         this.onPlayVideo(app);
       });
+      this.videoApp = app;
     },
     onPlayVideo: function (app) {
       this.videoPlaying = true;
@@ -125,9 +111,11 @@ export default {
       // create a new Sprite using the video texture
       var videoSprite = new PIXI.Sprite(this.video);
 
-      // Stetch the fullscreen
+      // Set video to full app size
       videoSprite.width = app.screen.width;
       videoSprite.height = app.screen.height;
+
+      this.videoSprite = videoSprite;
 
       app.stage.addChild(videoSprite);
       app.stage.addChild(this.pauseBtn);
@@ -141,7 +129,7 @@ export default {
       app.stage.addChild(bar);
 
       bar.y = app.screen.height - 30;
-      console.log(this.video);
+
       // Update progress
       this.video.on("update", function(e) {
         this.percentDone = (100 / e.baseTexture.source.duration) * e.baseTexture.source.currentTime;
@@ -180,14 +168,28 @@ export default {
         this.video.baseTexture.source.volume = this.audioLevel;
       }
     },
+    fullScreen: function () {
+      // Target the canvas and resize
+      var theCanvas = document.querySelectorAll('canvas');
+      // this.videoApp.renderer.resize(screen.width, screen.height);
+      // this.videoSprite.width = this.videoApp.screen.width;
+      // this.videoSprite.height = this.videoApp.screen.height;
+
+      if (theCanvas[0].requestFullscreen) {
+        theCanvas[0].requestFullscreen();
+      } else if (theCanvas[0].msRequestFullscreen) {
+        theCanvas[0].msRequestFullscreen();
+      } else if (theCanvas[0].mozRequestFullScreen) {
+        theCanvas[0].mozRequestFullScreen();
+      } else if (theCanvas[0].webkitRequestFullscreen) {
+        theCanvas[0].webkitRequestFullscreen();
+      }
+    },
     pauseVideo: function () {
       this.video.baseTexture.source.pause();
     },
     playVideo: function () {
       this.video.baseTexture.source.play();
-    },
-    fullScreen: function () {
-      app.fullscreen;
     },
     pixiVue: function () {
 
@@ -236,7 +238,7 @@ export default {
   },
   mounted: function () {
     this.videoTest()
-    this.pixiVue()
+    // this.pixiVue()
   },
   created: function () {
     // EventBus.$on('button-clicked', this.buttonClicked);
