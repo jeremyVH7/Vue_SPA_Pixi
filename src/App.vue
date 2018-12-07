@@ -40,9 +40,14 @@ export default {
       playBtn: '',
       pauseBtn: '',
       controlBtn: '',
+      muteBtn: '',
+      vUpBtn: '',
+      vDownBtn: '',
+      replayBtnShown: false,
       percentDone: '',
       audioLevel: .5,
       muted: false,
+      isFullScreen: false,
       videoPlaying: false
     }
   },
@@ -107,7 +112,7 @@ export default {
       // Set starting volume level
       this.video.baseTexture.source.volume = this.audioLevel;
       // Don't need the start button anymore
-      this.startBtn.destroy();
+      // this.startBtn.width = 0;
 
       // create a new Sprite using the video texture
       var videoSprite = new PIXI.Sprite(this.video);
@@ -139,6 +144,30 @@ export default {
         //percent to pixels
         var progress = app.screen.width * (this.percentDone / 100)
         bar.width = progress;
+        if (this.percentDone > 99) {
+          // Replay button
+          var replay = new PIXI.Graphics()
+          .beginFill(0x0, 0.5)
+          .drawRoundedRect(0, 0, 100, 100, 10)
+          .endFill()
+          .beginFill(0xffffff)
+          .moveTo(36, 30)
+          .lineTo(36, 70)
+          .lineTo(70, 50);
+
+          // Position the button
+          replay.x = (app.screen.width - replay.width) / 2;
+          replay.y = (app.screen.height - replay.height) / 2;
+
+          // Enable interactivity on the button
+          replay.interactive = true;
+          replay.buttonMode = true;
+
+          app.stage.addChild(replay);
+
+          this.replayBtnShown = true;
+        }
+
       });
 
       // Play/Pause button -
@@ -179,16 +208,76 @@ export default {
       this.fsBtn = fsButton;
       app.stage.addChild(this.fsBtn);
 
-      // Position the controlButton
+      // Position the Button
       fsButton.x = app.screen.width - 40;
       fsButton.y = app.screen.height - 40;
 
-      // Enable interactivity on the controlButton
+      // Enable interactivity on the Button
       fsButton.interactive = true;
       fsButton.buttonMode = true;
 
       this.fsBtn.on('pointertap', (event) => {
         this.fullScreen();
+      });
+
+      // mute button -
+      var muteButton = new PIXI.Graphics()
+          .beginFill(0x0, 0.5)
+          .drawRect(0, 0, 40, 40, 10)
+          .endFill();
+      this.muteBtn = muteButton;
+      app.stage.addChild(this.muteBtn);
+
+      // Position the Button
+      muteButton.x = app.screen.width / 2;
+      muteButton.y = app.screen.height - 40;
+
+      // Enable interactivity on the Button
+      muteButton.interactive = true;
+      muteButton.buttonMode = true;
+
+      this.muteBtn.on('pointertap', (event) => {
+        this.muteVideo();
+      });
+
+      // volume up button -
+      var vUpButton = new PIXI.Graphics()
+          .beginFill(0x0, 0.5)
+          .drawRect(0, 0, 40, 40, 10)
+          .endFill();
+      this.vUpBtn = vUpButton;
+      app.stage.addChild(this.vUpBtn);
+
+      // Position the Button
+      vUpButton.x = app.screen.width / 2 + 45;
+      vUpButton.y = app.screen.height - 40;
+
+      // Enable interactivity on the Button
+      vUpButton.interactive = true;
+      vUpButton.buttonMode = true;
+
+      this.vUpBtn.on('pointertap', (event) => {
+        this.volumeUp();
+      });
+
+      // volume down button -
+      var vDownButton = new PIXI.Graphics()
+          .beginFill(0x0, 0.5)
+          .drawRect(0, 0, 40, 40, 10)
+          .endFill();
+      this.vDownBtn = vDownButton;
+      app.stage.addChild(this.vDownBtn);
+
+      // Position the Button
+      vDownButton.x = app.screen.width / 2 + 90;
+      vDownButton.y = app.screen.height - 40;
+
+      // Enable interactivity on the Button
+      vDownButton.interactive = true;
+      vDownButton.buttonMode = true;
+
+      this.vDownBtn.on('pointertap', (event) => {
+        this.volumeDown();
       });
 
 
@@ -204,6 +293,9 @@ export default {
         }
 
       });
+    },
+    showStartButton: function () {
+      app.stage.addChild(this.startBtn);
     },
     volumeUp: function () {
       this.audioLevel = this.audioLevel + .1;
@@ -231,17 +323,31 @@ export default {
       // this.videoSprite.width = this.videoApp.screen.width;
       // this.videoSprite.height = this.videoApp.screen.height;
 
-      // Target the canvas and resize
+      // Target the canvas/element and resize
       var theCanvas = document.querySelectorAll('canvas');
 
-      if (theCanvas[0].requestFullscreen) {
-        theCanvas[0].requestFullscreen();
-      } else if (theCanvas[0].msRequestFullscreen) {
-        theCanvas[0].msRequestFullscreen();
-      } else if (theCanvas[0].mozRequestFullScreen) {
-        theCanvas[0].mozRequestFullScreen();
-      } else if (theCanvas[0].webkitRequestFullscreen) {
-        theCanvas[0].webkitRequestFullscreen();
+      if (this.isFullScreen === false) {
+        if (theCanvas[0].requestFullscreen) {
+          theCanvas[0].requestFullscreen();
+        } else if (theCanvas[0].msRequestFullscreen) {
+          theCanvas[0].msRequestFullscreen();
+        } else if (theCanvas[0].mozRequestFullScreen) {
+          theCanvas[0].mozRequestFullScreen();
+        } else if (theCanvas[0].webkitRequestFullscreen) {
+          theCanvas[0].webkitRequestFullscreen();
+        }
+        this.isFullScreen = true;
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+        this.isFullScreen = false;
       }
     },
     pauseVideo: function () {
