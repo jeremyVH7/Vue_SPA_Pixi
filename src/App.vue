@@ -33,6 +33,7 @@ export default {
       title: 'Pixi.js Test',
       speed: 0.1,
       image: '',
+      // Video stuff
       videoApp: '',
       videoSprite: '',
       video: '',
@@ -78,13 +79,6 @@ export default {
       // Add to the stage
       app.stage.addChild(this.startBtn);
 
-      // Listen for a click/tap event to start playing the video
-      // this is useful for some mobile platforms. For example:
-      // ios9 and under cannot render videos in PIXI without a
-      // polyfill - https://github.com/bfred-it/iphone-inline-video
-      // ios10 and above require a click/tap event to render videos
-      // that contain audio in PIXI. Videos with no audio track do
-      // not have this requirement
       this.startBtn.on('pointertap', (event) => {
         this.onPlayVideo(app);
       });
@@ -175,7 +169,7 @@ export default {
 
       });
 
-      // Play/Pause button -
+      ////// Play/Pause button -
       var controlButton = new PIXI.Graphics()
           .beginFill(0x0, 0.5)
           .drawRect(0, 0, 40, 40, 10)
@@ -205,7 +199,7 @@ export default {
         }
       });
 
-      // full screen button -
+      ////// full screen button -
       var fsButton = new PIXI.Graphics()
           .beginFill(0x0, 0.5)
           .drawRect(0, 0, 40, 40, 10)
@@ -225,7 +219,7 @@ export default {
         this.fullScreen();
       });
 
-      // mute button -
+      ////// mute button -
       var muteButton = new PIXI.Graphics()
           .beginFill(0x0, 0.5)
           .drawRect(0, 0, 40, 40, 10)
@@ -245,7 +239,7 @@ export default {
         this.muteVideo();
       });
 
-      // volume up button -
+      ////// volume up button -
       var vUpButton = new PIXI.Graphics()
           .beginFill(0x0, 0.5)
           .drawRect(0, 0, 40, 40, 10)
@@ -265,7 +259,7 @@ export default {
         this.volumeUp();
       });
 
-      // volume down button -
+      ////// volume down button -
       var vDownButton = new PIXI.Graphics()
           .beginFill(0x0, 0.5)
           .drawRect(0, 0, 40, 40, 10)
@@ -286,8 +280,7 @@ export default {
       });
 
 
-
-
+      ////// Play/pause when clicking anywhere on video
       this.pauseBtn.on('pointertap', (event) => {
         if (this.videoPlaying === true) {
           this.pauseVideo();
@@ -361,6 +354,7 @@ export default {
     playVideo: function () {
       this.video.baseTexture.source.play();
     },
+    //////// Spinning logo
     pixiVue: function () {
 
       document.body.appendChild(pixiApp.view);
