@@ -1,18 +1,7 @@
 <template>
   <div>
     <div id="app">
-      <div class='row' id='title-h1-div'><h1 id='title-h1'>{{ title }}</h1></div>
-      <!-- <h3>Spinning Logo Controls</h3>
-      <button class="btn btn-primary NavButton" v-on:click="pixiStop" tag="button">Stop</button>
-      <button class="btn btn-primary NavButton" v-on:click="pixiStart" tag="button">Start</button>
-      <button class="btn btn-primary NavButton" v-on:click="speedUp" tag="button">Speed Up</button>
-      <button class="btn btn-primary NavButton" v-on:click="slowDown" tag="button">Slow Down</button>
-      <hr> -->
-      <!-- <h3>Video Controls</h3>
-      <button class="btn btn-primary NavButton" v-on:click="volumeUp" tag="button">Volume Up</button>
-      <button class="btn btn-primary NavButton" v-on:click="volumeDown" tag="button">Volume Down</button>
-      <button class="btn btn-primary NavButton" v-on:click="muteVideo" tag="button">Mute</button>
-      <button class="btn btn-primary NavButton" v-on:click="fullScreen" tag="button">Fullscreen</button> -->
+      <div class='' id='title-h1-div'><h1 id='title-h1'>{{ title }}</h1></div>
     </div>
   </div>
 </template>
@@ -34,7 +23,6 @@ export default {
       speed: 0.1,
       image: '',
       // Video stuff
-      videoApp: '',
       videoAppWidth: 960,
       videoAppHeight: 540,
       videoSprite: '',
@@ -55,7 +43,7 @@ export default {
     }
   },
   methods: {
-    videoTest: function () {
+    videoPlayer: function () {
       var app = new PIXI.Application(this.videoAppWidth, this.videoAppHeight, { transparent: true });
       document.body.appendChild(app.view);
 
@@ -82,11 +70,10 @@ export default {
       app.stage.addChild(this.startBtn);
 
       this.startBtn.on('pointertap', (event) => {
-        this.onPlayVideo(app);
+        this.startVideo(app);
       });
-      this.videoApp = app;
     },
-    onPlayVideo: function (app) {
+    startVideo: function (app) {
       this.videoPlaying = true;
       // Pause button - transparent button same size as video app
       var pauseButton = new PIXI.Graphics()
@@ -319,11 +306,7 @@ export default {
     fullScreen: function () {
       /////// Is there a way to do it within pixi?
 
-      // this.videoApp.renderer.resize(screen.width, screen.height);
-      // this.videoSprite.width = this.videoApp.screen.width;
-      // this.videoSprite.height = this.videoApp.screen.height;
-
-      // Target the canvas/element and resize
+      // Target the canvas/element and resize using browser API
       var theCanvas = document.querySelectorAll('canvas');
 
       if (this.isFullScreen === false) {
@@ -403,7 +386,7 @@ export default {
     }
   },
   mounted: function () {
-    this.videoTest()
+    this.videoPlayer()
     // this.pixiVue()
   },
   created: function () {
