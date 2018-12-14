@@ -35,6 +35,8 @@ export default {
       image: '',
       // Video stuff
       videoApp: '',
+      videoAppWidth: 960,
+      videoAppHeight: 540,
       videoSprite: '',
       video: '',
       startBtn: '',
@@ -54,7 +56,7 @@ export default {
   },
   methods: {
     videoTest: function () {
-      var app = new PIXI.Application(960, 540, { transparent: true });
+      var app = new PIXI.Application(this.videoAppWidth, this.videoAppHeight, { transparent: true });
       document.body.appendChild(app.view);
 
       // Create play button that can be used to trigger the video
@@ -89,7 +91,7 @@ export default {
       // Pause button - transparent button same size as video app
       var pauseButton = new PIXI.Graphics()
           .beginFill(0x0, 0.0)
-          .drawRoundedRect(0, 0, 960, 540, 10)
+          .drawRoundedRect(0, 0, this.videoAppWidth, this.videoAppHeight, 10)
           .endFill();
 
       // Position the pauseButton (centered)
@@ -106,7 +108,7 @@ export default {
       // Set starting volume level
       this.video.baseTexture.source.volume = this.audioLevel;
       // Don't need the start button anymore
-      // this.startBtn.width = 0;
+      this.startBtn.destroy();
 
       // create a new Sprite using the video texture
       var videoSprite = new PIXI.Sprite(this.video);
@@ -119,7 +121,7 @@ export default {
 
       app.stage.addChild(videoSprite);
       app.stage.addChild(this.pauseBtn);
-      this.video.baseTexture.source.controls = true;
+      // this.video.baseTexture.source.controls = true;
 
 
       ///////////////// Controls
